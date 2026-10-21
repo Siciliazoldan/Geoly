@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang=""pt-BR"">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geoly | Onde seu negócio dá certo </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav class="navbar py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="#">
+          <img src="img/pin.png" alt="Logo do Geoly" height="40">
+          <span class="brand-name">Geoly</span>
+        </a>
+        <span class="badge-live"><span class="dot"></span> Ao vivo · Ponta Grossa</span>
+      </div>
+      
+      <!-- Menu de Perfil do Usuário -->
+      <div class="user-profile d-flex align-items-center gap-2" title="Perfil do Empresário" style="cursor: pointer;">
+        <div class="user-avatar rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 13px;">EA</div>
+        <span class="user-name fw-medium text-muted small d-none d-sm-inline">Empresário</span>
+      </div>
+    </div>
+  </nav>
+
+  
+  <header class="cabeçalho-topo">
+    <div class="container">
+      <div class="row align-items-center">
+
+        <div class="col-lg-8">
+          <h1 class="display-4 fw-bold">Pergunte onde seu negócio <span class="destaque">dá certo.</span></h1>
+          <p class="lead">Escreva sua dúvida em linguagem simples. O Geoly cruza concorrência e população por bairro e mostra a resposta no mapa.</p>
+
+          <div class="input-group input-group-lg mt-4">
+            <input id="pergunta" type="text" class="form-control"
+                   placeholder="Ex.: onde abrir uma cafeteria em Ponta Grossa?">
+            <button id="btn-perguntar" type="button" class="btn btn-geoly">Perguntar</button>
+          </div>
+
+          <div id="exemplos" class="d-flex flex-wrap gap-2 mt-3"></div>
+        </div>
+    </div>
+  </header>
+
+    <!-- ===== BLOCO 3 ===== -->
+  <main class="py-5">
+    <div class="container">
+
+      <h2 class="h5 mb-3">Tipo de negócio</h2>
+      <div id="tipos" class="d-flex flex-wrap gap-2 mb-4"></div>
+
+      <div class="row g-4">
+
+        <!-- Coluna do mapa -->
+        <div class="col-lg-7">
+          <section class="painel">
+            <h2 class="painel-titulo">Mapa de oportunidades</h2>
+            <svg id="mapa" viewBox="20 24 540 380" role="img"
+                 aria-label="Mapa esquemático dos bairros de Ponta Grossa"></svg>
+            <div class="legenda">
+              <span><i style="background: var(--alto)"></i>Espaço para crescer</span>
+              <span><i style="background: var(--medio)"></i>Equilibrado</span>
+              <span><i style="background: var(--baixo)"></i>Saturado</span>
+            </div>
+          </section>
+        </div>
+
+        <!-- Coluna da resposta e das consultas -->
+        <div class="col-lg-5">
+          <section class="painel mb-4" aria-live="polite">
+            <h2 class="painel-titulo">Resposta do Geoly</h2>
+            <p id="resposta">Faça uma pergunta ou toque em um bairro do mapa.</p>
+            <div id="kpis" class="row g-2"></div>
+          </section>
+
+          <section class="painel">
+            <h2 class="painel-titulo">Consultas agora</h2>
+            <ul id="feed" class="list-unstyled mb-0"></ul>
+          </section>
+        </div>
+
+      </div>
+
+      <p class="nota">
+        Protótipo: a população total de Ponta Grossa vem do IBGE (Censo 2022): 358.371 habitantes.
+        Os valores por bairro e de concorrentes são ilustrativos, e o mapa é esquemático (não é o contorno real).
+      </p>
+    </div>
+  </main>
+
+    <!-- ===== MENU LATERAL DO PERFIL (lado direito) ===== -->
+  <div class="offcanvas offcanvas-end menu-perfil" tabindex="-1"
+       id="menuPerfil" aria-labelledby="menuPerfilTitulo">
+
+    <div class="offcanvas-header">
+      <h2 class="offcanvas-title h5" id="menuPerfilTitulo">Meu perfil</h2>
+      <button type="button" class="btn-close btn-close-white"
+              data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+      <div class="perfil-card">
+        <span class="avatar avatar-grande">U</span>
+        <div>
+          <strong>Seu nome</strong>
+          <small>seuemail@exemplo.com</small>
+        </div>
+      </div>
+
+      <nav class="menu-lista">
+        <a href="#">Minhas consultas</a>
+        <a href="#">Negócios salvos</a>
+        <a href="#">Relatórios</a>
+        <a href="#">Configurações</a>
+        <a href="#" class="sair">Sair</a>
+      </nav>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
+
+</body>

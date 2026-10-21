@@ -1,0 +1,317 @@
+/* ===== 1) VARIÁVEIS GLOBAIS (:root) ===== */
+:root {
+  --vinho: #24101A;
+  --vinho-2: #3A1824;
+  --creme: #FFF7F2;
+  --rosado: #FFF4EE;
+  --coral: #F5224F;
+  --vermelho: #E11D48;
+  --laranja: #FF9F43;
+  --rosa-claro: #D8B8BF;
+  --marrom: #7A5560;
+  --linha: #EBD9D4;
+
+  /* Cores do mapa (oportunidade) */
+  --alto: #1FAA6D;
+  --medio: #FF9F43;
+  --baixo: #E11D48;
+}
+
+/* ===== 2) CONFIGURAÇÕES GERAIS ===== */
+body {
+  background-color: var(--creme);
+  color: var(--marrom);
+  font-family: "Hanken Grotesk", sans-serif;
+}
+
+/* ===== 3) NAVBAR E PERFIL DO USUÁRIO ===== */
+.navbar {
+  background: var(--vinho);
+  border-bottom: 1px solid var(--linha);
+}
+
+.brand-name {
+  font-family: "Sora", sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--laranja);
+}
+
+.badge-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--rosa-claro);
+  background: var(--vinho-2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #5A2B3C;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--alto);
+  animation: pulso-dot 1.8s infinite;
+}
+
+@keyframes pulso-dot {
+  0% { box-shadow: 0 0 0 0 rgba(31, 170, 109, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(31, 170, 109, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(31, 170, 109, 0); }
+}
+
+/* Perfil do usuário no topo */
+.user-profile {
+  background: var(--vinho-2);
+  border: 1px solid #5A2B3C;
+  padding: 4px 12px;
+  border-radius: 999px;
+  transition: border-color 0.2s;
+}
+.user-profile:hover {
+  border-color: var(--laranja);
+}
+
+/* ===== 4) HERO / TOPO DESTAQUE ===== */
+.cabeçalho-topo {
+  background: var(--vinho);
+  color: var(--rosado);
+  padding: 2.5rem 0 3.5rem;
+}
+
+.cabeçalho-topo h1 {
+  font-family: "Sora", sans-serif;
+  color: var(--rosado);
+}
+
+.cabeçalho-topo .lead {
+  color: var(--rosa-claro);
+}
+
+.destaque {
+  color: var(--laranja);
+}
+
+/* ===== 5) CAMPOS E BOTÕES ===== */
+.form-control:focus {
+  border-color: var(--laranja);
+  box-shadow: 0 0 0 0.25rem rgba(255, 159, 67, 0.35);
+}
+
+.btn-geoly {
+  background: linear-gradient(135deg, var(--coral), var(--laranja));
+  color: #fff;
+  font-weight: 700;
+  border: 0;
+  transition: filter 0.2s;
+}
+
+.btn-geoly:hover {
+  filter: brightness(1.1);
+  color: #fff;
+}
+
+/* ===== 6) CHIPS (Filtros) ===== */
+.chip {
+  border: 1px solid var(--linha);
+  background: #fff;
+  color: var(--marrom);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  border-color: var(--coral);
+  color: var(--vinho);
+}
+
+.chip.ativo {
+  background: var(--vinho);
+  border-color: var(--vinho);
+  color: var(--rosado);
+  font-weight: 700;
+}
+
+/* ===== 7) PAINEIS E MAPA ===== */
+.painel {
+  background: #fff;
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(36, 16, 26, 0.03);
+}
+
+.painel-titulo {
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--vinho);
+  margin-bottom: 1rem;
+}
+
+#mapa {
+  width: 100%;
+  height: auto;
+  max-height: 310px;
+  display: block;
+  background: var(--creme);
+  border-radius: 10px;
+}
+
+.bairro {
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  cursor: pointer;
+  opacity: 0.92;
+  transition: opacity 0.2s;
+}
+
+.bairro:hover {
+  opacity: 1;
+}
+
+.bairro.selecionado {
+  stroke: var(--vinho);
+}
+
+.rotulo, .rotulo-nota {
+  font-family: "Sora", sans-serif;
+  font-size: 12px;
+  fill: #fff;
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: rgba(36, 16, 26, 0.6);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.rotulo { font-weight: 700; }
+.rotulo-nota { font-weight: 500; }
+
+.pulso {
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulsar 2.2s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes pulsar {
+  from { transform: scale(1); opacity: 1; }
+  to   { transform: scale(7); opacity: 0; }
+}
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--marrom);
+}
+
+.legenda i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  margin-right: 4px;
+}
+
+/* ===== 8) RESULTADOS E KPIS ===== */
+.kpi {
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  background: var(--creme);
+}
+
+.kpi span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--marrom);
+}
+
+.kpi b {
+  font-family: "Sora", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--vinho);
+}
+
+#feed li {
+  border-left: 3px solid var(--coral);
+  padding-left: 8px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: var(--marrom);
+}
+
+#feed time {
+  color: var(--vinho);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.nota {
+  font-size: 0.8rem;
+  color: var(--marrom);
+  margin-top: 1.5rem;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulso, .dot { animation: none; }
+}
+
+/* ===== 10) BOTÃO DE PERFIL (no topo) ===== */
+.btn-perfil {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--vinho-2);
+  border: 1px solid #5A2B3C;
+  color: var(--rosado);
+  padding: 5px 16px 5px 5px;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-perfil:hover { border-color: var(--laranja); }
+
+/* Bolinha com a inicial (usada no botão e no menu) */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--coral), var(--laranja));
+  color: #fff;
+  font-family: "Sora", sans-serif; font-weight: 800;
+}
+.avatar-grande { width: 56px; height: 56px; font-size: 1.4rem; }
+
+/* ===== 11) MENU LATERAL ===== */
+.menu-perfil {
+  --bs-offcanvas-width: 320px;
+  --bs-offcanvas-bg: var(--vinho);
+  --bs-offcanvas-color: var(--rosado);
+}
+.menu-perfil .offcanvas-header { border-bottom: 1px solid #5A2B3C; }
+
+.perfil-card { display: flex; align-items: center; gap: 14px; padding: 1rem 0 1.25rem; }
+.perfil-card strong { display: block; }
+.perfil-card small { color: var(--rosa-claro); }
+
+.menu-lista a {
+  display: block; padding: 12px 14px; border-radius: 10px;
+  color: var(--rosado); text-decoration: none;
+}
+.menu-lista a:hover { background: var(--vinho-2); color: var(--laranja); }
+.menu-lista .sair { margin-top: 1rem; color: var(--rosa-claro); }
