@@ -54,7 +54,7 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--alto);
-  animation: pulso-dot 1.8s infinite;
+  animation: pulso-dot 1.5s infinite;
 }
 
 @keyframes pulso-dot {
@@ -79,7 +79,7 @@ body {
 .cabeçalho-topo {
   background: var(--vinho);
   color: var(--rosado);
-  padding: 2.5rem 0 3.5rem;
+  padding: 1.5rem 0 2.5rem;
 }
 
 .cabeçalho-topo h1 {
@@ -92,6 +92,114 @@ body {
 }
 
 .destaque {
+  color: var(--laranja);
+}
+
+/* NOVO: painel da coluna da direita no hero */
+.painel-hero {
+  height: 100%;                      /* coluna da direita ocupa a altura toda */
+  background: var(--vinho-2);
+  border: 1px solid #5A2B3C;
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.painel-hero-titulo {
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--laranja);
+}
+
+.selo-exemplo {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--vinho);
+  background: var(--laranja);
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+.painel-hero-titulo { color: var(--rosado); }
+.painel-hero-titulo span { color: var(--laranja); }
+
+.an-topo { display: flex; align-items: center; gap: 16px; margin: 1rem 0; }
+
+/* anel de nota: o preenchimento é feito pelo JavaScript (conic-gradient) */
+.anel {
+  flex: 0 0 auto;
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.anel b {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--vinho);
+  display: grid; place-items: center;
+  font-family: "Sora", sans-serif;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.an-bairro { display: block; font-size: 1.15rem; color: #fff; }
+.an-nivel {
+  display: inline-block;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 2px 10px; border-radius: 999px;
+  color: #fff; margin: 2px 0 4px;
+}
+#an-frase { color: var(--rosa-claro); }
+
+.painel-hero .kpi { background: rgba(255,255,255,0.07); border-color: #5A2B3C; }
+.painel-hero .kpi span { color: var(--rosa-claro); }
+.painel-hero .kpi b { color: #fff; }
+
+/* barra: aqui x mínimo saudável */
+.an-barra-bloco { margin-top: 1rem; }
+.an-barra-texto {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; color: var(--rosa-claro); margin-bottom: 6px;
+}
+.an-barra-texto span:last-child { color: #fff; font-weight: 700; }
+.an-barra {
+  position: relative; height: 12px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 999px; overflow: hidden;
+}
+.an-barra i { display: block; height: 100%; border-radius: 999px; transition: width 0.4s; }
+.an-barra u {                 /* marca do ideal (66,7% da barra) */
+  position: absolute; top: 0; bottom: 0; left: 66.7%;
+  width: 3px; background: #fff; text-decoration: none;
+}
+.an-barra-legenda { display: block; margin-top: 6px; color: var(--rosa-claro); font-size: 0.75rem; }
+
+.an-leitura { margin: 1rem 0 0.5rem; font-size: 0.78rem; color: var(--rosa-claro); }
+.an-leitura b { padding: 1px 6px; border-radius: 6px; color: #fff; }
+.an-leitura .v { background: var(--alto); }
+.an-leitura .l { background: var(--medio); color: var(--vinho); }
+.an-leitura .r { background: var(--baixo); }
+
+.an-sub {
+  font-family: "Sora", sans-serif;
+  font-size: 0.85rem; color: var(--laranja);
+  margin: 0.75rem 0 0.25rem;
+}
+
+#ranking li {
+  display: flex;                   /* flexbox: nome à esquerda, nota à direita */
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-top: 1px solid #5A2B3C;
+  color: var(--rosado);
+}
+
+#ranking li b {
+  font-family: "Sora", sans-serif;
   color: var(--laranja);
 }
 
@@ -127,7 +235,7 @@ body {
 }
 
 .chip:hover {
-  border-color: var(--coral);
+  border-color: var(--laranja);
   color: var(--vinho);
 }
 
@@ -155,60 +263,28 @@ body {
   margin-bottom: 1rem;
 }
 
+/* MUDANÇA: mapa real (Leaflet) precisa de altura fixa */
 #mapa {
   width: 100%;
-  height: auto;
-  max-height: 310px;
-  display: block;
-  background: var(--creme);
+  height: 460px;
   border-radius: 10px;
+  z-index: 0;          /* evita o mapa ficar por cima do menu lateral */
 }
 
-.bairro {
-  stroke: #fff;
-  stroke-width: 4;
-  stroke-linejoin: round;
-  cursor: pointer;
-  opacity: 0.92;
-  transition: opacity 0.2s;
-}
-
-.bairro:hover {
-  opacity: 1;
-}
-
-.bairro.selecionado {
-  stroke: var(--vinho);
-}
-
-.rotulo, .rotulo-nota {
+/* MUDANÇA: etiqueta (tooltip) que aparece sobre cada bairro */
+.rotulo-mapa {
   font-family: "Sora", sans-serif;
+  font-weight: 700;
   font-size: 12px;
-  fill: #fff;
-  text-anchor: middle;
-  pointer-events: none;
-  paint-order: stroke;
-  stroke: rgba(36, 16, 26, 0.6);
-  stroke-width: 3px;
-  stroke-linejoin: round;
+  text-align: center;
+  color: #fff;
+  background: rgba(36, 16, 26, 0.75);
+  border: 0;
+  box-shadow: none;
 }
 
-.rotulo { font-weight: 700; }
-.rotulo-nota { font-weight: 500; }
-
-.pulso {
-  fill: none;
-  stroke: var(--coral);
-  stroke-width: 2;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: pulsar 2.2s ease-out forwards;
-  pointer-events: none;
-}
-
-@keyframes pulsar {
-  from { transform: scale(1); opacity: 1; }
-  to   { transform: scale(7); opacity: 0; }
+.rotulo-mapa::before {
+  display: none;       /* remove a setinha padrão do Leaflet */
 }
 
 .legenda {
@@ -271,7 +347,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulso, .dot { animation: none; }
+  .dot { animation: none; }
 }
 
 /* ===== 10) BOTÃO DE PERFIL (no topo) ===== */
@@ -315,3 +391,7 @@ body {
 }
 .menu-lista a:hover { background: var(--vinho-2); color: var(--laranja); }
 .menu-lista .sair { margin-top: 1rem; color: var(--rosa-claro); }
+
+/* divisor e aviso vazio dentro do painel da direita */
+.an-divisor { border-top: 1px solid #5A2B3C; margin-top: 1.25rem; }
+.an-vazio { color: var(--rosa-claro); font-size: 0.85rem; margin: 0; }

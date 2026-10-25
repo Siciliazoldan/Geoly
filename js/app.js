@@ -1,26 +1,31 @@
 // ===== 1) DADOS =====
+// MUDANÇA: cada bairro agora tem lat/lng (mapa real) em vez de "pontos" (SVG)
 const bairros = [
-  { nome: "Centro",       mil: 28, pontos: "250,150 340,140 370,210 320,260 240,250 220,200" },
-  { nome: "Oficinas",     mil: 32, pontos: "120,190 220,200 240,250 210,320 110,300 80,240" },
-  { nome: "Uvaranas",     mil: 45, pontos: "370,210 470,190 540,260 520,350 400,340 320,260" },
-  { nome: "Nova Rússia",  mil: 22, pontos: "130,70 230,60 250,150 220,200 120,190 90,120" },
-  { nome: "Órfãs",        mil: 26, pontos: "340,140 430,70 520,100 510,170 470,190 370,210" },
-  { nome: "Jd. Carvalho", mil: 20, pontos: "80,240 110,300 90,370 40,330 40,270" },
-  { nome: "Contorno",     mil: 18, pontos: "210,320 240,250 320,260 400,340 360,390 240,385" },
-  { nome: "Boa Vista",    mil: 15, pontos: "230,60 330,40 430,70 340,140 250,150" }
+  { nome: "Centro",       mil: 28, lat: -25.0950, lng: -50.1620 },
+  { nome: "Oficinas",     mil: 32, lat: -25.1080, lng: -50.1700 },
+  { nome: "Uvaranas",     mil: 45, lat: -25.0960, lng: -50.1130 },
+  { nome: "Nova Rússia",  mil: 22, lat: -25.0800, lng: -50.1900 },
+  { nome: "Órfãs",        mil: 26, lat: -25.0780, lng: -50.1450 },
+  { nome: "Jd. Carvalho", mil: 20, lat: -25.1230, lng: -50.1850 },
+  { nome: "Contorno",     mil: 18, lat: -25.1130, lng: -50.1450 },
+  { nome: "Boa Vista",    mil: 15, lat: -25.0680, lng: -50.1700 }
 ];
 
+// MUDANÇA: nichos generalizados (a ordem dos números segue a ordem dos bairros acima)
 const negocios = {
-  "padaria":    { ideal: 2500,  concorrentes: [14, 11, 12, 5, 6, 6, 4, 3], palavras: ["padaria", "pao"] },
-  "lavanderia": { ideal: 12000, concorrentes: [3, 2, 2, 0, 1, 1, 0, 0],    palavras: ["lavanderia", "lavar"] },
-  "academia":   { ideal: 5000,  concorrentes: [9, 7, 8, 3, 4, 3, 2, 2],    palavras: ["academia", "treino"] },
-  "pet shop":   { ideal: 4000,  concorrentes: [7, 6, 9, 3, 4, 3, 2, 1],    palavras: ["pet", "animal", "cachorro"] },
-  "cafeteria":  { ideal: 5000,  concorrentes: [12, 4, 5, 2, 3, 2, 1, 1],   palavras: ["cafe", "cafeteria"] }
+  "Gastronomia":       { ideal: 2500, concorrentes: [30, 22, 24, 9, 10, 8, 6, 5],
+    palavras: ["gastronom", "restaurante", "cafe", "padaria", "lanchonete", "pizza"] },
+  "Imobiliário":       { ideal: 6000, concorrentes: [8, 5, 4, 1, 2, 1, 2, 1],
+    palavras: ["imobiliaria", "imovel", "imoveis", "apartamento", "aluguel"] },
+  "Academias e bem-estar": { ideal: 5000, concorrentes: [9, 7, 8, 3, 4, 3, 2, 2],
+    palavras: ["academia", "treino", "fitness", "pilates"] },
+  "Saúde e hospitais": { ideal: 4000, concorrentes: [12, 6, 7, 2, 3, 2, 2, 1],
+    palavras: ["hospital", "clinica", "saude", "farmacia", "dentista"] }
 };
 
 
 // ===== 2) ESTADO (o que está selecionado agora) =====
-let negocioAtual = "cafeteria";
+let negocioAtual = "Gastronomia";
 let bairroSelecionado = -1;   // -1 = nenhum
 
 
@@ -30,23 +35,14 @@ function pegar(id) {
   return document.getElementById(id);
 }
 
-function corDoBairro(pontos) {
-  if (pontos >= 70) return "var(--alto)";
-  if (pontos >= 45) return "var(--medio)";
-  return "var(--baixo)";
+// MUDANÇA: o mapa Leaflet pinta com hexadecimal (não aceita var(--alto))
+function corHex(pontos) {
+  if (pontos >= 70) return "#1FAA6D";
+  if (pontos >= 45) return "#FF9F43";
+  return "#E11D48";
 }
 
-function centro(i) {
-  const pares = bairros[i].pontos.split(" ");
-  let somaX = 0;
-  let somaY = 0;
-  for (const par of pares) {
-    const [x, y] = par.split(",").map(Number);
-    somaX += x;
-    somaY += y;
-  }
-  return [somaX / pares.length, somaY / pares.length];
-}
+// (a função centro(i) foi apagada: o mapa real não precisa dela)
 
 
 
@@ -66,18 +62,46 @@ function calcular() {
 
 
 
-// ===== 5) DESENHO DO MAPA =====
+// ===== 5) MAPA REAL (Leaflet) =====
+// Criado UMA vez só: centro em Ponta Grossa, zoom 12
+const mapaLeaflet = L.map("mapa").setView([-25.095, -50.145], 12);
+
+// Camada visual do mapa (as "fotos" das ruas)
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: "&copy; OpenStreetMap"
+}).addTo(mapaLeaflet);
+
+// Camada onde ficam os círculos dos bairros (limpamos e redesenhamos)
+const camada = L.layerGroup().addTo(mapaLeaflet);
+
 function desenharMapa() {
   const dados = calcular();
-  let html = "";
-  for (let i = 0; i < bairros.length; i++) {
-    const [cx, cy] = centro(i);
-    const sel = (i === bairroSelecionado) ? "selecionado" : "";
-    html += `<polygon class="bairro ${sel}" data-i="${i}" points="${bairros[i].pontos}" style="fill:${corDoBairro(dados[i].pontos)}"></polygon>`;
-    html += `<text x="${cx}" y="${cy}" class="rotulo">${bairros[i].nome}</text>`;
-    html += `<text x="${cx}" y="${cy + 16}" class="rotulo-nota">${dados[i].pontos}</text>`;
+  camada.clearLayers();   // apaga os círculos antigos
+
+  bairros.forEach(function (b, i) {
+    const selecionado = (i === bairroSelecionado);
+
+    L.circle([b.lat, b.lng], {
+      radius: 900,                                   // raio em metros
+      color: selecionado ? "#24101A" : "#fff",       // borda
+      weight: selecionado ? 4 : 2,
+      fillColor: corHex(dados[i].pontos),            // cor pela pontuação
+      fillOpacity: 0.6
+    })
+    .bindTooltip("<b>" + b.nome + "</b><br>" + dados[i].pontos,
+                 { permanent: true, direction: "center", className: "rotulo-mapa" })
+    .on("click", function () {
+      bairroSelecionado = i;
+      atualizarTudo();
+    })
+    .addTo(camada);
+  });
+
+  if (bairroSelecionado >= 0) {
+    const b = bairros[bairroSelecionado];
+    mapaLeaflet.panTo([b.lat, b.lng]);               // centraliza no bairro escolhido
   }
-  pegar("mapa").innerHTML = html + '<g id="pulsos"></g>';
 }
 
 
@@ -114,14 +138,15 @@ function textoResposta(i) {
   } else if (x.pontos >= 45) {
     conselho = "Você precisa de um diferencial para se destacar.";
   } else {
-    conselho = `O melhor bairro para este negócio é ${melhor.nome} (${melhor.pontos}).`;
+    conselho = `O melhor bairro para este setor é ${melhor.nome} (${melhor.pontos}).`;
   }
 
   const palavra = (x.conc === 1) ? "concorrente" : "concorrentes";
-  return `${x.nome} está ${rotulo(x.pontos)} para ${negocioAtual}. Pontuação ${x.pontos}. Há ${x.conc} ${palavra} para ${formatar(x.moradores / 1000)} mil moradores. ${conselho}`;
+  // MUDANÇA: "para o setor de ..."
+  return `${x.nome} está ${rotulo(x.pontos)} para o setor de ${negocioAtual.toLowerCase()}. Pontuação ${x.pontos}. Há ${x.conc} ${palavra} para ${formatar(x.moradores / 1000)} mil moradores. ${conselho}`;
 }
 
-// ===== 7) DESENHO DOS BOTÕES E NÚMEROS =====
+// ===== 7) DESENHO DOS BOTÕES, NÚMEROS E RANKING =====
 function desenharTipos() {
   let html = "";
   for (const nome in negocios) {
@@ -133,7 +158,7 @@ function desenharTipos() {
 
 function desenharKpis() {
   if (bairroSelecionado < 0) {
-    pegar("kpis").innerHTML = "";
+    pegar("kpis").innerHTML = '<p class="an-vazio">Toque em um bairro do mapa para ver os números dele.</p>';
     return;
   }
   const x = calcular()[bairroSelecionado];
@@ -150,26 +175,81 @@ function desenharKpis() {
   pegar("kpis").innerHTML = html;
 }
 
+// NOVO: painel "Exemplo de análise" (usa os dados reais do setor selecionado)
+function nivelDaNota(pontos) {
+  if (pontos >= 70) return "Alta oportunidade";
+  if (pontos >= 45) return "Equilibrado";
+  return "Saturado";
+}
+
+function desenharAnalise() {
+  const ordem = calcular().slice().sort(function (a, b) {
+    return b.pontos - a.pontos;                  // do maior para o menor
+  });
+  const topo = ordem[0];
+  const cor = corHex(topo.pontos);
+  const ideal = negocios[negocioAtual].ideal;
+
+  // título, nota e anel
+  pegar("an-setor").textContent = negocioAtual.toLowerCase();
+  pegar("an-nota").textContent = topo.pontos;
+  pegar("an-anel").style.background =
+    `conic-gradient(${cor} ${topo.pontos}%, rgba(255,255,255,0.15) 0)`;
+
+  // nome, veredito e frase em linguagem simples
+  pegar("an-bairro").textContent = topo.nome;
+  const nivel = pegar("an-nivel");
+  nivel.textContent = nivelDaNota(topo.pontos);
+  nivel.style.background = cor;
+  pegar("an-frase").textContent =
+    `${formatar(topo.moradores / 1000)} mil moradores para ${topo.conc} concorrentes.`;
+
+  // números principais
+  const itens = [
+    ["Concorrentes", topo.conc],
+    ["Moradores", formatar(topo.moradores / 1000) + " mil"],
+    ["Mínimo saudável", formatar(ideal)]
+  ];
+  let stats = "";
+  for (const [nome, valor] of itens) {
+    stats += `<div class="col-4"><div class="kpi"><span>${nome}</span><b>${valor}</b></div></div>`;
+  }
+  pegar("an-stats").innerHTML = stats;
+
+  // barra: quanto maior que a marca branca, melhor
+  const razao = topo.habPorConc / ideal;                    // 1 = exatamente o ideal
+  const largura = Math.min(razao / 1.5, 1) * 100;           // a marca fica em 66,7%
+  pegar("an-barra-fill").style.width = largura + "%";
+  pegar("an-barra-fill").style.background = cor;
+  pegar("an-barra-valor").textContent =
+    `${formatar(topo.habPorConc)} (mínimo ${formatar(ideal)})`;
+
+  // ranking top 3
+  let html = "";
+  ordem.slice(0, 3).forEach(function (x, i) {
+    html += `<li><span>${i + 1}. ${x.nome}</span><b style="color:${corHex(x.pontos)}">${x.pontos}</b></li>`;
+  });
+  pegar("ranking").innerHTML = html;
+}
+
 function atualizarTudo() {
   desenharTipos();
   desenharMapa();
   desenharKpis();
+  desenharAnalise();   // NOVO
   if (bairroSelecionado >= 0) {
     pegar("resposta").textContent = textoResposta(bairroSelecionado);
   }
 }
 
 // ===== 8) CLIQUES =====
+// MUDANÇA: o clique no bairro agora é tratado dentro do Leaflet (.on("click")),
+// então aqui sobrou só o clique nos botões de setor.
 document.addEventListener("click", function (evento) {
   const botaoTipo = evento.target.closest("[data-tipo]");
-  const poligono = evento.target.closest("[data-i]");
 
   if (botaoTipo) {
     negocioAtual = botaoTipo.dataset.tipo;
-    atualizarTudo();
-  }
-  if (poligono) {
-    bairroSelecionado = Number(poligono.dataset.i);
     atualizarTudo();
   }
 });
@@ -208,7 +288,7 @@ function perguntar(texto) {
   if (tipoAchado !== null) {
     negocioAtual = tipoAchado;
   } else {
-    aviso = `Não identifiquei o tipo de negócio, então usei “${negocioAtual}”. `;
+    aviso = `Não identifiquei o setor, então usei “${negocioAtual}”. `;
   }
 
   bairroSelecionado = (bairroAchado >= 0) ? bairroAchado : indiceMelhor();
@@ -217,11 +297,11 @@ function perguntar(texto) {
 }
 
 // ===== 10) EXEMPLOS CLICÁVEIS =====
+// MUDANÇA: só 3, genéricos (cada um tem uma palavra-chave dos setores)
 const exemplos = [
-  "Onde abrir uma cafeteria?",
-  "Vale abrir uma academia em Uvaranas?",
-  "Qual bairro está saturado de padarias?",
-  "Preciso de uma lavanderia no Centro"
+  "Onde abrir um restaurante?",
+  "Vale abrir uma imobiliária em Uvaranas?",
+  "Qual bairro precisa de uma clínica?"
 ];
 
 function desenharExemplos() {
